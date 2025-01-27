@@ -78,7 +78,7 @@ async def cambio_scheda(update: Update, context: CallbackContext):
         elif query.data == "3":
             giorno = "c"
         await query.message.reply_text(
-            f"Inserisci la nuova scheda per il giorno {giorno.down()}:"
+            f"Inserisci la nuova scheda per il giorno {giorno.lower()}:"
         )
 
 async def ricevi_testo(update: Update, context: CallbackContext):
