@@ -5,45 +5,61 @@
 ## Key Features
 
 - **Personalized workout plans**: GymBot provides you with a daily workout plan based on the program you've set up.
-- **User management**: Each user has their own workout plan, stored in a database.
+- **User management**: Each user has their own workout plan, stored in a Firebase database.
 - **Telegram integration**: Easily interact with GymBot via Telegram, receiving workout plans directly in the chat.
 
 ## Requirements
 
 - Python 3.x
 - A Telegram account and a bot created through the BotFather on Telegram.
-- A database (can be configured with firebase or another database of your choice).
+- Firebase database for storing user workout plans.
 
 ## Installation
 
 1. **Clone the repository**:
-   First, clone the repository to your computer:
-
    ```bash
    git clone https://github.com/crookeDog/GymBot.git
    cd GymBot
-  2.**Install the dependencies**:
-  You can find the required dependencies in the following file:requirment.txt
-  
-  3.**Configure the credentials**:
-  -Telegram Bot Token: Obtain a token by creating a new bot via BotFather on Telegram.
-  -Firebase Credentials: If the bot uses Firebase, make sure you have the JSON credentials file.
+   ```
 
-  4. Now start the bot to use it.
-     
+2. **Install the dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-   ## Bot Notes
-   
-   Before starting the bot, change the user names inserted in the bot's white list and create the respective nodes in the database.
+3. **Configure the credentials**:
+   - **Telegram Bot Token**: Obtain a token by creating a new bot via BotFather on Telegram.
+   - **Firebase Credentials**: If the bot uses Firebase, make sure you have the JSON credentials file.
+   - Rename your credentials file as `my_credentials.json` and place it in the root directory.
+
+4. **Run the bot**:
+   ```bash
+   python main.py
+   ```
+
+## Bot Notes
+
+Before starting the bot, change the usernames inserted in the bot's whitelist and create the respective nodes in the Firebase database.
+
+## How to use
+
+After pressing the start button, you can:
+- View your workout plan by selecting a day (`A`, `B`, `C`).
+- Modify your workout plan by selecting a day and inputting new exercises.
+- Check your current training week and either reset or advance it.
+
+## Firebase Database Structure
+
+```plaintext
+utenti/
+  username/
+    a: "Workout Plan Day A"
+    b: "Workout Plan Day B"
+    c: "Workout Plan Day C"
+    settimana: 1
+```
 
 
-   ## How to use 
-
-   After you press the start button, you can view your card by entering the day (a, b, c) or modify it.
-   
-
-    
-   
    
 
    
