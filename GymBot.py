@@ -1,4 +1,4 @@
-import Firebase  # Importa il modulo Firebase con il nome corretto
+import Firebase 
 from Firebase import (
     get_scheda,
     modifica_scheda_gym,
@@ -10,13 +10,14 @@ from Firebase import (
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, CallbackQueryHandler, ContextTypes, filters
 
-white_list = ["trasted_telegram_username", "trasted_telegram_username", "trasted_telegram_username", "trasted_telegram_username"]
+white_list = ["name1", "name2", "name3", "name4"]
 username = None
 change_scheda = False
 giorno = ""
 
+
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global username
     username = update.effective_user.first_name.lower()
     tastiera = [
         [
@@ -32,6 +33,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def visualizza_settimana(update: Update, context: CallbackContext):
+    
     query = update.callback_query
     await query.answer()
     sett = visualizza_settimana_gym(username)
@@ -48,6 +50,7 @@ async def visualizza_settimana(update: Update, context: CallbackContext):
     )
 
 async def visualizza_scheda(update: Update, context: CallbackContext):
+    username = update.effective_user.first_name.lower()
     query = update.callback_query  
     await query.answer()  
     tastiera = [
@@ -64,6 +67,7 @@ async def visualizza_scheda(update: Update, context: CallbackContext):
     )
 
 async def manda_scheda(update: Update, context: CallbackContext):
+    username = update.effective_user.first_name.lower()
     query = update.callback_query
     giorno = query.data
     await query.answer()  
@@ -73,6 +77,7 @@ async def manda_scheda(update: Update, context: CallbackContext):
     )
 
 async def modifica_scheda(update: Update, context: CallbackContext):
+    username = update.effective_user.first_name.lower()
     query = update.callback_query
     await query.answer()
     tastiera = [
@@ -90,6 +95,7 @@ async def modifica_scheda(update: Update, context: CallbackContext):
 
 async def cambio_scheda(update: Update, context: CallbackContext):
     global change_scheda, giorno
+    username = update.effective_user.first_name.lower()
     query = update.callback_query
     await query.answer()
     change_scheda = True
@@ -98,6 +104,7 @@ async def cambio_scheda(update: Update, context: CallbackContext):
 
 async def ricevi_testo(update: Update, context: CallbackContext):
     global change_scheda, giorno
+    username = update.effective_user.first_name.lower()
     if change_scheda:
         testo = update.message.text
         modifica_scheda_gym(username, giorno, testo)
@@ -108,6 +115,7 @@ async def ricevi_testo(update: Update, context: CallbackContext):
 
 async def aumenta_settimana(update: Update, context: CallbackContext):
     query = update.callback_query
+    username = update.effective_user.first_name.lower()
     await query.answer()
     aumenta_settimana_gym(username)
     sett = visualizza_settimana_gym(username)
@@ -115,13 +123,14 @@ async def aumenta_settimana(update: Update, context: CallbackContext):
 
 async def resetta_settimana(update: Update, context: CallbackContext):
     query = update.callback_query
+    username = update.effective_user.first_name.lower()
     await query.answer()
     resetta_settimana_gym(username)
     sett = visualizza_settimana_gym(username)
     await query.message.reply_text(f"Attualmente stai facendo la {sett}ª settimana.")
 
 def main():
-    TOKEN = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    TOKEN = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
     application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
@@ -136,5 +145,5 @@ def main():
 
     application.run_polling()
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     main()
