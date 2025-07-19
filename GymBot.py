@@ -6,64 +6,61 @@ from Firebase import (
     resetta_settimana_gym,
     visualizza_settimana_gym
 )
-
+from config import TOKEN
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, CallbackQueryHandler, ContextTypes, filters
 
-white_list = ["name1", "name2", "name3", "name4"]
 username = None
 change_scheda = False
 giorno = ""
 
 
-
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     username = update.effective_user.first_name.lower()
-    tastiera = [
+    keyboard = [
         [
-            InlineKeyboardButton("Visualizza scheda", callback_data="visualizza"),
-            InlineKeyboardButton("Modifica scheda", callback_data="modifica"),
-            InlineKeyboardButton("Visualizza settimana", callback_data="settimana"),
+            InlineKeyboardButton("View workout", callback_data="visualizza"),
+            InlineKeyboardButton("Edit workout", callback_data="modifica"),
+            InlineKeyboardButton("View week", callback_data="settimana"),
         ]
     ]
-    tastiera_markup = InlineKeyboardMarkup(tastiera)
+    reply_markup = InlineKeyboardMarkup(keyboard)
     await update.message.reply_text(
-        f"Ciao {username}, cosa vuoi fare?",
-        reply_markup=tastiera_markup
+        f"Hi {username}, what would you like to do?",
+        reply_markup=reply_markup
     )
 
 async def visualizza_settimana(update: Update, context: CallbackContext):
-    
     query = update.callback_query
     await query.answer()
-    sett = visualizza_settimana_gym(username)
-    tastiera = [
+    week = visualizza_settimana_gym(username)
+    keyboard = [
         [
-            InlineKeyboardButton("Resetta", callback_data="resetta"),
-            InlineKeyboardButton("Aumenta", callback_data="aumenta"),
+            InlineKeyboardButton("Reset", callback_data="resetta"),
+            InlineKeyboardButton("Next week", callback_data="aumenta"),
         ]
     ]
-    tastiera_markup = InlineKeyboardMarkup(tastiera)
+    reply_markup = InlineKeyboardMarkup(keyboard)
     await query.message.reply_text(
-        f"Attualmente stai facendo la {sett}ª settimana. Vuoi passare alla successiva o tornare alla prima?",
-        reply_markup=tastiera_markup
+        f"You are currently on week {week}. Do you want to move to the next one or reset?",
+        reply_markup=reply_markup
     )
 
 async def visualizza_scheda(update: Update, context: CallbackContext):
     username = update.effective_user.first_name.lower()
     query = update.callback_query  
     await query.answer()  
-    tastiera = [
+    keyboard = [
         [
-            InlineKeyboardButton("Giorno A", callback_data="a"),
-            InlineKeyboardButton("Giorno B", callback_data="b"),
-            InlineKeyboardButton("Giorno C", callback_data="c"),
+            InlineKeyboardButton("Day A", callback_data="a"),
+            InlineKeyboardButton("Day B", callback_data="b"),
+            InlineKeyboardButton("Day C", callback_data="c"),
         ]
     ]
-    tastiera_markup = InlineKeyboardMarkup(tastiera)
+    reply_markup = InlineKeyboardMarkup(keyboard)
     await query.message.reply_text(
-        "Seleziona il giorno:",
-        reply_markup=tastiera_markup
+        "Select the day:",
+        reply_markup=reply_markup
     )
 
 async def manda_scheda(update: Update, context: CallbackContext):
@@ -73,24 +70,24 @@ async def manda_scheda(update: Update, context: CallbackContext):
     await query.answer()  
     scheda = get_scheda(username, giorno)
     await query.message.reply_text(
-        f"La tua scheda per il giorno {giorno.upper()} è: {scheda}"
+        f"Your workout for day {giorno.upper()} is: {scheda}"
     )
 
 async def modifica_scheda(update: Update, context: CallbackContext):
     username = update.effective_user.first_name.lower()
     query = update.callback_query
     await query.answer()
-    tastiera = [
+    keyboard = [
         [
-            InlineKeyboardButton("Giorno A", callback_data="1"),
-            InlineKeyboardButton("Giorno B", callback_data="2"),
-            InlineKeyboardButton("Giorno C", callback_data="3"),
+            InlineKeyboardButton("Day A", callback_data="1"),
+            InlineKeyboardButton("Day B", callback_data="2"),
+            InlineKeyboardButton("Day C", callback_data="3"),
         ]
     ]
-    tastiera_markup = InlineKeyboardMarkup(tastiera)
+    reply_markup = InlineKeyboardMarkup(keyboard)
     await query.message.reply_text(
-        "Seleziona il giorno:",
-        reply_markup=tastiera_markup
+        "Select the day:",
+        reply_markup=reply_markup
     )
 
 async def cambio_scheda(update: Update, context: CallbackContext):
@@ -100,37 +97,37 @@ async def cambio_scheda(update: Update, context: CallbackContext):
     await query.answer()
     change_scheda = True
     giorno = {"1": "a", "2": "b", "3": "c"}.get(query.data, "")
-    await query.message.reply_text(f"Inserisci la nuova scheda per il giorno {giorno.upper()}:")
+    await query.message.reply_text(f"Enter the new workout for day {giorno.upper()}:")
 
 async def ricevi_testo(update: Update, context: CallbackContext):
     global change_scheda, giorno
     username = update.effective_user.first_name.lower()
     if change_scheda:
-        testo = update.message.text
-        modifica_scheda_gym(username, giorno, testo)
+        text = update.message.text
+        modifica_scheda_gym(username, giorno, text)
         change_scheda = False 
-        await update.message.reply_text("Scheda modificata con successo!")
+        await update.message.reply_text("Workout updated successfully!")
     else:
-        await update.message.reply_text("Non hai selezionato una scheda da modificare.")
+        await update.message.reply_text("You haven’t selected a workout to edit.")
 
 async def aumenta_settimana(update: Update, context: CallbackContext):
     query = update.callback_query
     username = update.effective_user.first_name.lower()
     await query.answer()
     aumenta_settimana_gym(username)
-    sett = visualizza_settimana_gym(username)
-    await query.message.reply_text(f"Attualmente stai facendo la {sett}ª settimana.")
+    week = visualizza_settimana_gym(username)
+    await query.message.reply_text(f"You are now on week {week}.")
 
 async def resetta_settimana(update: Update, context: CallbackContext):
     query = update.callback_query
     username = update.effective_user.first_name.lower()
     await query.answer()
     resetta_settimana_gym(username)
-    sett = visualizza_settimana_gym(username)
-    await query.message.reply_text(f"Attualmente stai facendo la {sett}ª settimana.")
+    week = visualizza_settimana_gym(username)
+    await query.message.reply_text(f"You are now on week {week}.")
 
 def main():
-    TOKEN = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+    
     application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))

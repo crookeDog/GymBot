@@ -1,4 +1,2 @@
-To run this bot correctly, the following libraries are required:
-
-- **firebase-admin**: To interact with Firebase and use the Realtime Database.
-- **python-telegram-bot**: To manage the Telegram bot and interact with users.
+python-telegram-bot==20.6
+firebase-admin
