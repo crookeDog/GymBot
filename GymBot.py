@@ -22,16 +22,6 @@ from Firebase import (
     visualizza_settimana_gym
 )
 
-# 🔐 Firebase config da variabile d'ambiente
-firebase_cred_json = os.getenv("FIREBASE_CRED")
-
-if firebase_cred_json:
-    cred_dict = json.loads(firebase_cred_json)
-    cred = credentials.Certificate(cred_dict)
-    firebase_admin.initialize_app(cred)
-else:
-    print("Firebase credentials not found in environment.")
-
 TOKEN = os.getenv("TOKEN")
 
 change_scheda = False
