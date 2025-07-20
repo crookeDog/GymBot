@@ -1,4 +1,19 @@
-import Firebase 
+import os
+import json
+import firebase_admin
+from firebase_admin import credentials
+
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    CallbackQueryHandler,
+    MessageHandler,
+    ContextTypes,
+    CallbackContext,
+    filters
+)
+
 from Firebase import (
     get_scheda,
     modifica_scheda_gym,
@@ -6,14 +21,23 @@ from Firebase import (
     resetta_settimana_gym,
     visualizza_settimana_gym
 )
-from config import TOKEN
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, CallbackContext, CallbackQueryHandler, ContextTypes, filters
 
-username = None
+# 🔐 Firebase config da variabile d'ambiente
+firebase_cred_json = os.getenv("FIREBASE_CRED")
+
+if firebase_cred_json:
+    cred_dict = json.loads(firebase_cred_json)
+    cred = credentials.Certificate(cred_dict)
+    firebase_admin.initialize_app(cred)
+else:
+    print("Firebase credentials not found in environment.")
+
+TOKEN = os.getenv("TOKEN")
+
 change_scheda = False
 giorno = ""
 
+# === HANDLER ===
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     username = update.effective_user.first_name.lower()
@@ -31,6 +55,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 async def visualizza_settimana(update: Update, context: CallbackContext):
+    username = update.effective_user.first_name.lower()
     query = update.callback_query
     await query.answer()
     week = visualizza_settimana_gym(username)
@@ -47,7 +72,6 @@ async def visualizza_settimana(update: Update, context: CallbackContext):
     )
 
 async def visualizza_scheda(update: Update, context: CallbackContext):
-    username = update.effective_user.first_name.lower()
     query = update.callback_query  
     await query.answer()  
     keyboard = [
@@ -58,10 +82,7 @@ async def visualizza_scheda(update: Update, context: CallbackContext):
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.message.reply_text(
-        "Select the day:",
-        reply_markup=reply_markup
-    )
+    await query.message.reply_text("Select the day:", reply_markup=reply_markup)
 
 async def manda_scheda(update: Update, context: CallbackContext):
     username = update.effective_user.first_name.lower()
@@ -74,7 +95,6 @@ async def manda_scheda(update: Update, context: CallbackContext):
     )
 
 async def modifica_scheda(update: Update, context: CallbackContext):
-    username = update.effective_user.first_name.lower()
     query = update.callback_query
     await query.answer()
     keyboard = [
@@ -85,14 +105,10 @@ async def modifica_scheda(update: Update, context: CallbackContext):
         ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await query.message.reply_text(
-        "Select the day:",
-        reply_markup=reply_markup
-    )
+    await query.message.reply_text("Select the day:", reply_markup=reply_markup)
 
 async def cambio_scheda(update: Update, context: CallbackContext):
     global change_scheda, giorno
-    username = update.effective_user.first_name.lower()
     query = update.callback_query
     await query.answer()
     change_scheda = True
@@ -111,23 +127,23 @@ async def ricevi_testo(update: Update, context: CallbackContext):
         await update.message.reply_text("You haven’t selected a workout to edit.")
 
 async def aumenta_settimana(update: Update, context: CallbackContext):
-    query = update.callback_query
     username = update.effective_user.first_name.lower()
+    query = update.callback_query
     await query.answer()
     aumenta_settimana_gym(username)
     week = visualizza_settimana_gym(username)
     await query.message.reply_text(f"You are now on week {week}.")
 
 async def resetta_settimana(update: Update, context: CallbackContext):
-    query = update.callback_query
     username = update.effective_user.first_name.lower()
+    query = update.callback_query
     await query.answer()
     resetta_settimana_gym(username)
     week = visualizza_settimana_gym(username)
     await query.message.reply_text(f"You are now on week {week}.")
 
+# === AVVIO ===
 def main():
-    
     application = Application.builder().token(TOKEN).build()
 
     application.add_handler(CommandHandler("start", start))
@@ -142,5 +158,5 @@ def main():
 
     application.run_polling()
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     main()
