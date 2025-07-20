@@ -1,47 +1,40 @@
 import firebase_admin
 from firebase_admin import credentials, db
 
-# Percorso corretto al file delle credenziali scaricato
-cred = credentials.Certificate(r"gymbot-c8ad7-firebase-adminsdk-w62qj-b1e546c2b8.json")
+cred = credentials.Certificate("gymbot-c8ad7-firebase-adminsdk-w62qj-b1e546c2b8.json")
 
-# Inizializzazione dell'app Firebase
 firebase_admin.initialize_app(cred, {
     'databaseURL': 'https://gymbot-c8ad7-default-rtdb.europe-west1.firebasedatabase.app'
 })
 
-# Funzione per creare o aggiornare un nodo nel database
-def get_scheda(username, giorno):
-    ref = db.reference(f'utenti/{username}/{giorno}')  # Percorso al nodo specifico
-    scheda = ref.get()  # Lettura del valore
-    if scheda:
-        print(f"Scheda trovata per {username} nel giorno {giorno}: {scheda}")
+def get_workout(username, day):
+    ref = db.reference(f'users/{username}/{day}')
+    workout = ref.get()
+    if workout:
+        print(f"Workout found for {username} on {day}: {workout}")
     else:
-        print(f"Nessuna scheda trovata per {username} nel giorno {giorno}.")
-    return scheda   
+        print(f"No workout found for {username} on {day}.")
+    return workout
 
-def modifica_scheda_gym(username, giorno, scheda):
-    ref = db.reference(f'utenti/{username}/{giorno}')  # Percorso al nodo specifico
-    ref.set(scheda)  # Scrittura del valore
-    print(f"Scheda modificata per {username} nel giorno {giorno}: {scheda}")
+def update_workout(username, day, workout):
+    ref = db.reference(f'users/{username}/{day}')
+    ref.set(workout)
+    print(f"Workout updated for {username} on {day}: {workout}")
 
-def aumenta_settimana_gym(username):
-    ref = db.reference(f'utenti/{username}/settimana')
-    sett = ref.get()
-    int(sett)
-    sett = sett +1
+def increment_week(username):
+    ref = db.reference(f'users/{username}/week')
+    week = ref.get()
+    week = int(week) + 1
+    ref.set(week)
+    print(f"Week updated for {username} to week number {week}")
 
-    ref.set(sett)
-    print(f"Settimana aggiornata per {username} alla settimana n {sett}")
+def reset_week(username):
+    ref = db.reference(f'users/{username}/week')
+    week = ref.get()
+    week = 1
+    ref.set(week)
+    print(f"Week reset for {username} to week number {week}")
 
-def resetta_settimana_gym(username):
-    ref = db.reference(f'utenti/{username}/settimana')
-    sett = ref.get()
-    int(sett)
-    sett = sett - (sett-1)
-    ref.set(sett)
-    print(f"Settimana aggiornata per {username} alla settimana n {sett}")
-
-def visualizza_settimana_gym(username):
-    ref = db.reference(f'utenti/{username}/settimana')
-    sett = ref.get()
-    return sett
+def get_week(username):
+    ref = db.reference(f'users/{username}/week')
+    return ref.get()
