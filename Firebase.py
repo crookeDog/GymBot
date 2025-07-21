@@ -1,10 +1,10 @@
 import firebase_admin
 from firebase_admin import credentials, db
 
-cred = credentials.Certificate("gymbot-c8ad7-firebase-adminsdk-w62qj-b1e546c2b8.json")
+cred = credentials.Certificate("gymbot-xxxx.json")
 
 firebase_admin.initialize_app(cred, {
-    'databaseURL': 'https://gymbot-c8ad7-default-rtdb.europe-west1.firebasedatabase.app'
+    'databaseURL': 'https://gymbot-xxxxx.europe-west1.firebasedatabase.app'
 })
 
 def get_workout(username, day):
