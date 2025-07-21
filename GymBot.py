@@ -22,7 +22,7 @@ from Firebase import (
     visualizza_settimana_gym
 )
 
-TOKEN = os.getenv("TOKEN")
+TOKEN = "Token"
 
 change_scheda = False
 giorno = ""
